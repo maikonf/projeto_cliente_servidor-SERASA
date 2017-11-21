@@ -1,0 +1,112 @@
+<!DOCTYPE HTML>
+<html lang="pt-br">
+	<head>
+		<meta charset="UTF-8">
+
+		<title>Serasa System - ADMIN</title>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.0.min.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.js"></script>
+
+		<!-- bootstrap - link cdn -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet"
+                integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+		<!-- incluindo css -->
+		<link href="css/style.css" rel="stylesheet">
+
+		<script type="text/javascript">
+
+			$( window ).load(function() {
+				// Verificação da permissão do usuário para acessar a área restrita
+				var verificacao = localStorage.getItem("token");
+				if(verificacao === null){
+					window.location.href = '/';
+				}
+
+				// Função que seta o login do usuário logado
+				var username = localStorage.getItem("user");
+				$("#user").prepend("<li style='margin-left: 15px'>" + username.toUpperCase() + "</li>");
+
+			});
+
+			function logout(){
+				// Variáveis carregadas do localStorage
+				var token = localStorage.getItem("token");
+				var ip_server_logout = localStorage.getItem("IP_SERVER");
+
+				// Requisição PUT que solicita o logout do sistema
+				axios.put('http://' + ip_server_logout + '/logout', {},{ headers: {
+						'Content-Type': 'application/json',
+						'Authorization': `${token}`
+					}
+				})
+				.then((response) => {
+					// As informações contidas no localStorage são apagadas no momento do logout
+					localStorage.removeItem("token");
+					localStorage.removeItem("user");
+					window.location.href = '/';
+				})
+				.catch((error) => {
+					alert(error);
+					window.location.href = "/";
+				});
+			}
+
+		</script>
+	</head>
+
+	<body>
+		<!-- Nav responsável pela criação do header e dos menus do painel -->
+    <nav class="navbar navbar-s1 navbar-side" role="navigation">
+
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="" style="color: #fff;">SERASA SYSTEM ADMIN</a>
+      </div>
+
+      <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <ul id="side" class="nav navbar-nav side-nav" style="margin-top: 0.3%;">
+
+          <li><a href="/admin"><i class="glyphicon glyphicon-home"></i> Home</a></li>
+          <li><a href="/admin_list"><i class="glyphicon glyphicon-list"></i> Meus Dados</a></li>
+
+        </ul>
+
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown user-dropdown">
+            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							<i class="glyphicon glyphicon-user" value="teste"></i>
+						</a>
+            <ul class="dropdown-menu" id="user">
+
+              <li class="divider"></li>
+              <li><a class="sublink" onclick="logout()">logout</a></li>
+            </ul>
+          </li>
+        </ul>
+
+      </div>
+    </nav>
+
+		<!-- Div responsável pelo conteúdo da pagina inicial do painel administrativo -->
+    <div class="container" style="width: 84%; margin-left: 16%;float: right">
+      <div class="panel panel-default">
+        <div class="panel-body">
+					<h2>Bem vindo ao seu Painel Administrativo</h2><hr>
+
+					<p>
+							Este painel irá oferecer funcionalidades que permitam que você realize consultas,
+							atualize cadastros, entre outras funcionalidades.
+					</p>
+
+      	</div>
+      </div>
+    </div>
+
+	</body>
+</html>

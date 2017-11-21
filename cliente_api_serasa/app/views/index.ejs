@@ -1,0 +1,234 @@
+<!DOCTYPE HTML>
+<html lang="pt-br">
+	<head>
+		<meta charset="UTF-8">
+
+		<title>Serasa System</title>
+
+		<!-- JQuery -->
+		<script src="js/jquery-2.2.1.js"></script>
+    <script src="js/login.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.17.1/axios.js"></script>
+
+		<!-- bootstrap - link cdn -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+		<!-- incluindo css -->
+		<link href="css/style.css" rel="stylesheet">
+    <link href="css/login.css" rel="stylesheet">
+
+		<script type="text/javascript">
+
+			$(document).ready(function(){
+
+				$("#btn_ip").click( function(){
+					var ip = $("#ip_server").val();
+					localStorage.setItem("IP_SERVER", ip);
+					window.location.href = "/";
+				});
+			});
+
+			$( window ).load( function(){
+				$("#erros").hide();
+				$("#msg_cadastro").hide();
+			});
+
+			$(document).ready(function(){
+				$("#close").click( function(){
+					window.location.href = "/";
+				});
+			});
+
+			$(document).ready(function(){
+				$("#close_cad").click( function(){
+					window.location.href = "/";
+				});
+			});
+
+			function logar(){
+
+				var usuario = $("#usuario").val();
+				var senha = $("#senha").val();
+				var ip_server_login = localStorage.getItem("IP_SERVER");
+
+				
+				axios.put('http://' + ip_server_login + '/login', { nome_usuario: usuario, senha: senha}, { headers: {
+						'Content-Type': 'application/json'
+					}
+    		})
+				.then((response) => {
+		      /* após sucesso no login, armazenamos o token gerado em uma variável */
+		      token = response.data.token;
+
+					localStorage.setItem("token", token);
+					localStorage.setItem("user", usuario);
+
+					window.location.href = '/admin';
+		  	})
+		  	.catch((error) => {
+						if(error.response.data.mensagem !== undefined){
+							$("#erros").append('<strong>Atenção! </strong>' + error.response.data.mensagem);
+						}else{
+							$("#erros").append('<strong>Atenção! Erro </strong>' + error.response.status + ', mensagem de erro não foi identificada.');
+						}
+						$("#erros").show();
+		  	});
+			}
+
+			function cadastrar(){
+				var dados_cadastro = {
+					"cnpj": $("#cnpj").val(),
+					"nome_fantasia": $("#nome_fantasia").val(),
+					"razao_social": $("#razao_social").val(),
+					"email": $("#email").val(),
+					"nome_usuario": $("#nome_usuario").val(),
+					"senha": $("#senha_cad").val()
+				};
+
+				var ip_server_cadastro = localStorage.getItem("IP_SERVER");
+				axios.post('http://' + ip_server_cadastro + '/parceiro', dados_cadastro, { headers: {
+						'Content-Type': 'application/json'
+					}
+    		})
+				.then((response) => {
+					if(response.data.mensagem !== undefined){
+						$("#msg_cadastro").append('<strong>' + response.data.mensagem + '</strong>');
+					}else{
+						$("#msg_cadastro").append('<strong>Cadastrado com sucesso</strong>');
+					}
+					$("#msg_cadastro").show();
+		  	})
+		  	.catch((error) => {
+					console.log(error.response.data.mensagem);
+					if(error.response.data.mensagem !== undefined){
+						$("#msg_cadastro").append('<strong>Atenção! </strong>' + error.response.data.mensagem);
+					}else{
+						$("#msg_cadastro").append('<strong>Atenção! Erro </strong>' + error.response.status + ', mensagem de erro não foi identificada.');
+					}
+					$("#msg_cadastro").show();
+		  	});
+
+			}
+
+		</script>
+	</head>
+
+	<body>
+    <div class="container" id="container">
+				<!-- Apresentação das mensagens de erro de login no sistema -->
+				<div class="alert alert-warning alert-dismissible" id="erros" role="alert" style="width: 49%; margin: auto; margin-bottom: 2%">
+  				<button type="button" id="close" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<!-- Apresentação das mensagens relacionadas ao cadastro de parceiros -->
+				<div class="alert alert-warning alert-dismissible" id="msg_cadastro" role="alert" style="width: 49%; margin: auto; margin-bottom: 2%">
+					<button type="button" id="close_cad" class="close" data-dismiss="alert" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+
+				<!-- Div que organiza o conteúdo dos formulários de cadastro e login -->
+	      <div class="row">
+	        <div class="col-md-6 col-md-offset-3">
+	          <div class="panel panel-login">
+
+	            <div class="panel-heading">
+	              <div class="row">
+	                <div class="col-xs-6">
+	                  <a href="#" class="active" id="login-form-link">Login</a>
+	                </div>
+	                <div class="col-xs-6">
+	                  <a href="#" id="register-form-link">Cadastrar</a>
+	                </div>
+	              </div>
+	              <hr>
+	            </div>
+
+	            <div class="panel-body">
+	              <div class="row">
+	                <div class="col-lg-12">
+										<!-- Formulário de Login -->
+	                  <form id="login-form" action="" method="" role="form" style="display: block;">
+
+	                    <div class="form-group">
+	                      <input type="text" name="nome_usuario" id="usuario" tabindex="1" class="form-control" placeholder="Usuário" value="">
+	                    </div>
+
+	                    <div class="form-group">
+	                      <input type="password" name="senha" id="senha" tabindex="2" class="form-control" placeholder="Senha">
+	                    </div>
+
+	                    <div class="form-group">
+	                      <div class="row">
+	                        <div class="col-sm-6 col-sm-offset-3">
+	                          <input type="button" onclick="logar()" id="login-submit" tabindex="4" class="form-control btn btn-login" value="Acessar">
+	                        </div>
+	                      </div>
+	                    </div>
+	                  </form>
+
+
+										<!-- Formulário de Cadastro -->
+	                  <form id="register-form" method="post" role="form" style="display: none;">
+
+	                    <div class="form-group">
+	                      <input type="text" name="cnpj" id="cnpj" tabindex="1" class="form-control" placeholder="Informe o CNPJ" value="">
+	                    </div>
+
+	                    <div class="form-group">
+	                      <input type="text" name="nome_fantasia" id="nome_fantasia" tabindex="1" class="form-control" placeholder="Informe o Nome Fantasia" value="">
+	                    </div>
+
+	                    <div class="form-group">
+	                      <input type="text" name="razao_social" id="razao_social" tabindex="2" class="form-control" placeholder="Informe a Razão Social">
+	                    </div>
+
+	                    <div class="form-group">
+	                      <input type="email" name="email" id="email" tabindex="2" class="form-control" placeholder="Informe o email">
+	                    </div>
+
+	                    <div class="form-group">
+	                      <input type="text" name="nome_usuario" id="nome_usuario" tabindex="2" class="form-control" placeholder="Informe seu usuário">
+	                    </div>
+
+	                    <div class="form-group">
+	                      <input type="password" name="senha" id="senha_cad" tabindex="2" class="form-control" placeholder="Informe sua senha">
+	                    </div>
+
+	                    <div class="form-group">
+	                      <div class="row">
+	                        <div class="col-sm-6 col-sm-offset-3">
+	                          <input type="button" onclick="cadastrar()" id="register-submit" tabindex="4" class="form-control btn btn-register" value="Cadastrar">
+	                        </div>
+	                      </div>
+	                    </div>
+	                  </form>
+
+	                </div>
+	              </div>
+	            </div>
+	          </div>
+	        </div>
+	      </div><!-- Fim da div row -->
+
+	   </div><!-- Fim da div container -->
+
+		 <!-- Painel criado para possibilitar a troca de endereços(IPs) da API Server -->
+		 <div class="panel panel-default" style="width: 39%; margin: auto; margin-bottom: 2%; padding: 1%">
+			 <form class="form-inline">
+			  <div class="form-group">
+
+			    <div class="input-group">
+			      <div class="input-group-addon">IP</div>
+			      <input type="text" class="form-control" id="ip_server" placeholder="Informe o IP do Server">
+
+			    </div>
+			  </div>
+			  <button type="button" id="btn_ip" class="btn btn-primary" style="margin-left: 10%">Atualizar IP</button>
+			</form>
+		 </div>
+
+	</body>
+</html>

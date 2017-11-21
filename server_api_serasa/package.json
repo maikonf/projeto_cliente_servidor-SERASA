@@ -1,0 +1,27 @@
+{
+  "name": "multiroom_chat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jorge",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "consign": "^0.1.2",
+    "cors": "^2.8.4",
+    "crypto": "^1.0.1",
+    "ejs": "^2.5.2",
+    "express": "^4.14.0",
+    "express-validator": "^2.20.8",
+    "jws": "^3.1.4",
+    "jwt-decode": "^2.2.0",
+    "jwt-simple": "^0.5.1",
+    "mongodb": "^2.2.33",
+    "mongoose": "^4.13.1",
+    "passport": "^0.4.0",
+    "passport-jwt": "^3.0.1"
+  }
+}
